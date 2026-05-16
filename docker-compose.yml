@@ -31,8 +31,6 @@ services:
   web:
     build:
       context: docker/nginx
-    ports:
-      - "${PORT:-8080}:80"
     depends_on:
       app:
         condition: service_started
