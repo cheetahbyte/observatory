@@ -1,0 +1,40 @@
+# Dependencies
+/vendor/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Runtime/cache
+/storage/cache/
+/storage/logs/
+*.log
+
+# Local database/cache files
+*.sqlite
+*.sqlite3
+*.db
+
+# Composer
+composer.phar
+
+# IDE/editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+
+# PHPUnit / coverage
+.phpunit.result.cache
+/coverage/
+
+# PHPStan / Psalm
+.phpstan.cache/
+/.psalm/cache/
+
+# Docker/local overrides
+docker-compose.override.yml

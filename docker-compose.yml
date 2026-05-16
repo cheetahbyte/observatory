@@ -1,0 +1,49 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      IP_HASH_SALT: ${IP_HASH_SALT}
+      S3_ENDPOINT: ${S3_ENDPOINT}
+      S3_REGION: ${S3_REGION:-fsn1}
+      S3_KEY: ${S3_KEY}
+      S3_SECRET: ${S3_SECRET}
+      S3_BUCKET: ${S3_BUCKET}
+      S3_APPCAST_KEY: ${S3_APPCAST_KEY:-appcast.xml}
+      APPCAST_CACHE_TTL: ${APPCAST_CACHE_TTL:-60}
+    env_file:
+      - .env
+    volumes:
+      - cache:/app/storage/cache
+    read_only: true
+    tmpfs:
+      - /tmp
+    restart: unless-stopped
+
+  web:
+    build:
+      context: docker/nginx
+    ports:
+      - "${PORT:-8080}:80"
+    depends_on:
+      app:
+        condition: service_started
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+    restart: unless-stopped
+    healthcheck:
+      test: curl -sf http://localhost/nginx-health > /dev/null 2>&1 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  cache:

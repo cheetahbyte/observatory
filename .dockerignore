@@ -1,0 +1,10 @@
+.env
+.env.*
+.git
+.gitignore
+vendor/
+storage/cache/
+docker-compose.yml
+docker-compose*.yml
+load/
+database/schema.sql
