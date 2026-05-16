@@ -24,9 +24,6 @@ services:
     tmpfs:
       - /tmp
     restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_healthy
 
   web:
     build:
