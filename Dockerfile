@@ -1,4 +1,4 @@
-FROM composer:latest AS builder
+FROM composer:2.8 AS builder
 
 WORKDIR /app
 
@@ -7,7 +7,9 @@ RUN composer install \
     --no-dev \
     --prefer-dist \
     --no-interaction \
-    --no-autoloader
+    --no-autoloader \
+    --no-scripts \
+    --no-cache
 
 COPY . .
 
@@ -21,6 +23,8 @@ RUN set -eux; \
         libpq-dev \
     ; \
     docker-php-ext-install pdo_pgsql; \
+    apt-mark manual libpq5; \
+    apt-get purge -y --auto-remove libpq-dev; \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/*
 
@@ -30,9 +34,9 @@ COPY docker/php/conf.d/zz-app-pool.conf /usr/local/etc/php-fpm.d/zz-app-pool.con
 RUN set -eux; \
     useradd -m -u 1000 app; \
     mkdir -p /app/storage/cache; \
-    chown -R app:app /app
+    chown app:app /app/storage/cache
 
-COPY --from=builder /app /app
+COPY --chown=app:app --from=builder /app /app
 
 WORKDIR /app
 
