@@ -16,6 +16,7 @@ services:
       S3_BUCKET: ${S3_BUCKET}
       S3_APPCAST_KEY: ${S3_APPCAST_KEY:-appcast.xml}
       APPCAST_CACHE_TTL: ${APPCAST_CACHE_TTL:-60}
+      REDIS_URL: ${REDIS_URL:-tcp://redis:6379}
     env_file:
       - .env
     volumes:
@@ -23,6 +24,10 @@ services:
     read_only: true
     tmpfs:
       - /tmp
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
     restart: unless-stopped
 
   web:

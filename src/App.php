@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace KeplerObservatory;
 
 use KeplerObservatory\Controllers\AppcastController;
+use KeplerObservatory\Controllers\LatestController;
 use KeplerObservatory\Repositories\TelemetryRepository;
 use KeplerObservatory\Services\AppcastService;
+use KeplerObservatory\Services\RedisService;
 use Slim\Factory\AppFactory;
 
 final class App
@@ -24,7 +26,7 @@ final class App
             error_log('Telemetry disabled: ' . $error->getMessage());
         }
 
-        $appcastService = new AppcastService();
+        $appcastService = new AppcastService(new RedisService());
 
         $controller = new AppcastController(
             $telemetryRepository,
@@ -32,6 +34,11 @@ final class App
         );
 
         $app->get('/appcast.xml', [$controller, 'show']);
+
+        $latestController = new LatestController($appcastService);
+        $app->get('/latest', [$latestController, 'latest']);
+        $app->get('/latest-changelog', [$latestController, 'latestChangelog']);
+        $app->get('/latest-version', [$latestController, 'latestVersion']);
 
         return $app;
     }
